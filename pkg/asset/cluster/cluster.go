@@ -1,3 +1,5 @@
+//go:build !installer_library
+
 package cluster
 
 import (
