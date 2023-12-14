@@ -1,3 +1,5 @@
+//go:build !aro
+
 package kubeconfig
 
 import (
