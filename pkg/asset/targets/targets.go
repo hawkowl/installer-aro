@@ -69,7 +69,6 @@ var (
 		&cluster.Metadata{},
 		&machine.MasterIgnitionCustomizations{},
 		&machine.WorkerIgnitionCustomizations{},
-		&cluster.TerraformVariables{},
 		&kubeconfig.AdminClient{},
 		&password.KubeadminPassword{},
 		&tls.JournalCertKey{},
