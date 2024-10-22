@@ -26,7 +26,6 @@ import (
 	configv1 "github.com/openshift/api/config/v1"
 	"github.com/openshift/installer/data"
 	"github.com/openshift/installer/pkg/aro/aroign"
-	"github.com/openshift/installer/pkg/aro/dnsmasq"
 	"github.com/openshift/installer/pkg/asset"
 	"github.com/openshift/installer/pkg/asset/bootstraplogging"
 	"github.com/openshift/installer/pkg/asset/ignition"
@@ -226,13 +225,13 @@ func (a *Common) generateConfig(dependencies asset.Parents, templateData *bootst
 		}},
 	)
 
-	dnsmasqIgnConfig, err := dnsmasq.Ignition3Config(installConfig.Config.ClusterDomain(), aroDNSConfig.APIIntIP, aroDNSConfig.IngressIP, aroDNSConfig.GatewayDomains, aroDNSConfig.GatewayPrivateEndpointIP, true)
-	if err != nil {
-		return err
-	}
+	// dnsmasqIgnConfig, err := dnsmasq.Ignition3Config(installConfig.Config.ClusterDomain(), aroDNSConfig.APIIntIP, aroDNSConfig.IngressIP, aroDNSConfig.GatewayDomains, aroDNSConfig.GatewayPrivateEndpointIP, true)
+	// if err != nil {
+	// 	return err
+	// }
 
-	a.Config.Storage.Files = append(a.Config.Storage.Files, dnsmasqIgnConfig.Storage.Files...)
-	a.Config.Systemd.Units = append(a.Config.Systemd.Units, dnsmasqIgnConfig.Systemd.Units...)
+	// a.Config.Storage.Files = append(a.Config.Storage.Files, dnsmasqIgnConfig.Storage.Files...)
+	// a.Config.Systemd.Units = append(a.Config.Systemd.Units, dnsmasqIgnConfig.Systemd.Units...)
 
 	etchostsIgnConfig, err := aroign.EtcHostsIgnitionConfig(installConfig.Config.ClusterDomain(), aroDNSConfig.APIIntIP, aroDNSConfig.GatewayDomains, aroDNSConfig.GatewayPrivateEndpointIP)
 	if err != nil {
