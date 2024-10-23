@@ -13,4 +13,5 @@ Before=bootkube.service
 Type=oneshot
 ExecStart=/usr/local/bin/bootstrap-pivot.sh
 RemainAfterExit=true
+StandardOutput=journal+console
 {{end -}}

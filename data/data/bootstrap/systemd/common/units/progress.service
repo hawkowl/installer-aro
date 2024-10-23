@@ -9,6 +9,7 @@ ExecStart=/usr/local/bin/report-progress.sh /opt/openshift/auth/kubeconfig
 
 Restart=on-failure
 RestartSec=5s
+StandardOutput=journal+console
 
 [Install]
 WantedBy=multi-user.target

@@ -28,7 +28,6 @@ import (
 	ovirtprovider "github.com/openshift/cluster-api-provider-ovirt/pkg/apis/ovirtprovider/v1beta1"
 
 	"github.com/openshift/installer/pkg/aro/aroign"
-	"github.com/openshift/installer/pkg/aro/dnsmasq"
 	"github.com/openshift/installer/pkg/asset"
 	"github.com/openshift/installer/pkg/asset/ignition/machine"
 	"github.com/openshift/installer/pkg/asset/installconfig"
@@ -573,13 +572,14 @@ func (m *Master) Generate(dependencies asset.Parents) error {
 		}
 		machineConfigs = append(machineConfigs, ignIPv6)
 	}
-	ignARODNS, err := dnsmasq.MachineConfig(installConfig.Config.ClusterDomain(), aroDNSConfig.APIIntIP, aroDNSConfig.IngressIP, "master", aroDNSConfig.GatewayDomains, aroDNSConfig.GatewayPrivateEndpointIP, true)
-	if err != nil {
-		return errors.Wrap(err, "failed to create ignition for ARO DNS for master machines")
-	}
-	machineConfigs = append(machineConfigs, ignARODNS)
 
-	ignAROEtcHosts, err := aroign.EtcHostsMachineConfig(installConfig.Config.ClusterDomain(), aroDNSConfig.APIIntIP, aroDNSConfig.GatewayDomains, aroDNSConfig.GatewayPrivateEndpointIP, "master")
+	//ignARODNS, err := dnsmasq.MachineConfig(installConfig.Config.ClusterDomain(), aroDNSConfig.APIIntIP, "master", aroDNSConfig.GatewayDomains, aroDNSConfig.GatewayPrivateEndpointIP, true)
+	//if err != nil {
+	//		return errors.Wrap(err, "failed to create ignition for ARO DNS for master machines")
+	//	}
+	//machineConfigs = append(machineConfigs, ignARODNS)
+
+	ignAROEtcHosts, err := aroign.EtcHostsMachineConfig(installConfig.Config.ClusterDomain(), aroDNSConfig.APIIntIP, aroDNSConfig.IngressIP, aroDNSConfig.GatewayDomains, aroDNSConfig.GatewayPrivateEndpointIP, "master")
 	if err != nil {
 		return errors.Wrap(err, "failed to create ignition for ARO etc hosts for master machines")
 	}

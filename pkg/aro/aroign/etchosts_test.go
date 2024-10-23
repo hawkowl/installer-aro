@@ -17,16 +17,17 @@ func TestGenerateEtcHostsAROConf(t *testing.T) {
 			input: etcHostsAROConfTemplateData{
 				ClusterDomain:            "test.com",
 				APIIntIP:                 "10.10.10.10",
+				IngressIP:                "30.30.30.30",
 				GatewayDomains:           []string{"test2.com", "test3.com"},
 				GatewayPrivateEndpointIP: "20.20.20.20",
 			},
-			expected: "10.10.10.10\tapi.test.com api-int.test.com\n20.20.20.20\ttest2.com test3.com \n",
+			expected: "10.10.10.10\tapi.test.com api-int.test.com\n20.20.20.20\ttest2.com test3.com \n30.30.30.30	oauth-openshift.apps.test.com console-openshift-console.apps.test.com downloads-openshift-console.apps.test.com alertmanager-main-openshift-monitoring.apps.test.com prometheus-k8s-openshift-monitoring.apps.test.com\n",
 		},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, _ := GenerateEtcHostsAROConf(tc.input.ClusterDomain, tc.input.APIIntIP,
+			actual, _ := GenerateEtcHostsAROConf(tc.input.ClusterDomain, tc.input.APIIntIP, tc.input.IngressIP,
 				tc.input.GatewayDomains, tc.input.GatewayPrivateEndpointIP)
 			assert.Equal(t, tc.expected, string(actual))
 		})

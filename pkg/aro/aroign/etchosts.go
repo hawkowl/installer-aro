@@ -25,6 +25,7 @@ const (
 type etcHostsAROConfTemplateData struct {
 	ClusterDomain            string
 	APIIntIP                 string
+	IngressIP                string
 	GatewayDomains           []string
 	GatewayPrivateEndpointIP string
 }
@@ -39,6 +40,7 @@ type etcHostsAROScriptTemplateData struct {
 
 var aroConfTemplate = template.Must(template.New("etchosts").Parse(`{{ .APIIntIP }}	api.{{ .ClusterDomain }} api-int.{{ .ClusterDomain }}
 {{ $.GatewayPrivateEndpointIP }}	{{ range $GatewayDomain := .GatewayDomains }}{{ $GatewayDomain }} {{ end }}
+{{ $.IngressIP }}	oauth-openshift.apps.{{ .ClusterDomain }} console-openshift-console.apps.{{ .ClusterDomain }} downloads-openshift-console.apps.{{ .ClusterDomain }} alertmanager-main-openshift-monitoring.apps.{{ .ClusterDomain }} prometheus-k8s-openshift-monitoring.apps.{{ .ClusterDomain }}
 `))
 
 var aroScriptTemplate = template.Must(template.New("etchostscript").Parse(`#!/bin/bash
@@ -84,9 +86,10 @@ ExecStart=/bin/bash /usr/local/bin/{{ .ScriptFileName }}
 WantedBy=multi-user.target
 `))
 
-func GenerateEtcHostsAROConf(clusterDomain string, apiIntIP string, gatewayDomains []string, gatewayPrivateEndpointIP string) ([]byte, error) {
+func GenerateEtcHostsAROConf(clusterDomain string, apiIntIP string, ingressIP string, gatewayDomains []string, gatewayPrivateEndpointIP string) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	templateData := etcHostsAROConfTemplateData{
+		IngressIP:                ingressIP,
 		ClusterDomain:            clusterDomain,
 		APIIntIP:                 apiIntIP,
 		GatewayDomains:           gatewayDomains,
@@ -134,8 +137,8 @@ func GenerateEtcHostsAROUnit() (string, error) {
 	return buf.String(), nil
 }
 
-func EtcHostsIgnitionConfig(clusterDomain string, apiIntIP string, gatewayDomains []string, gatewayPrivateEndpointIP string) (*ign3types.Config, error) {
-	aroconf, err := GenerateEtcHostsAROConf(clusterDomain, apiIntIP, gatewayDomains, gatewayPrivateEndpointIP)
+func EtcHostsIgnitionConfig(clusterDomain string, apiIntIP string, ingressIP string, gatewayDomains []string, gatewayPrivateEndpointIP string) (*ign3types.Config, error) {
+	aroconf, err := GenerateEtcHostsAROConf(clusterDomain, apiIntIP, ingressIP, gatewayDomains, gatewayPrivateEndpointIP)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to generate addtional hosts for etc hosts")
 	}
@@ -202,8 +205,8 @@ func EtcHostsIgnitionConfig(clusterDomain string, apiIntIP string, gatewayDomain
 	return ign, nil
 }
 
-func EtcHostsMachineConfig(clusterDomain string, apiIntIP string, gatewayDomains []string, gatewayPrivateEndpointIP string, role string) (*mcfgv1.MachineConfig, error) {
-	ignConfig, err := EtcHostsIgnitionConfig(clusterDomain, apiIntIP, gatewayDomains, gatewayPrivateEndpointIP)
+func EtcHostsMachineConfig(clusterDomain string, apiIntIP string, ingressIP string, gatewayDomains []string, gatewayPrivateEndpointIP string, role string) (*mcfgv1.MachineConfig, error) {
+	ignConfig, err := EtcHostsIgnitionConfig(clusterDomain, apiIntIP, ingressIP, gatewayDomains, gatewayPrivateEndpointIP)
 	if err != nil {
 		return nil, err
 	}
